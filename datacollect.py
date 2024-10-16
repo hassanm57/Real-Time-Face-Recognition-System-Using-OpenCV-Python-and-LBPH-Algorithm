@@ -1,0 +1,42 @@
+import cv2
+count = 0
+face_classifier = cv2.CascadeClassifier(
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+)
+video_capture = cv2.VideoCapture(0)
+
+def detect_bounding_box(vid,count):
+    gray_image = cv2.cvtColor(vid, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
+    for (x, y, w, h) in faces:
+        cv2.imwrite('dataset/'+str(id)+"."+str(count)+".jpg",gray_image[y:y+h, x:x+w])
+        cv2.rectangle(vid, (x, y), (x + w, y + h), (150, 0, 150), 4)
+    return faces
+
+id = int(input("Enter your ID: ")) #id
+
+
+while True:
+
+    result, video_frame = video_capture.read()  # read frames from the video
+    if result is False:
+        break  # terminate the loop if the frame is not read successfully
+
+    faces = detect_bounding_box(
+        video_frame,count
+    ) 
+    count = count + 1 # apply the function we created to the video frame
+
+    cv2.imshow(
+        "facial recog algo", video_frame
+    ) 
+
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+        break
+    if count >= 300:
+        break
+
+video_capture.release()
+cv2.destroyAllWindows()
+
+print("dataset collected completely!")
